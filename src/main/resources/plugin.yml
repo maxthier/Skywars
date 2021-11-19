@@ -1,3 +1,7 @@
 name: Skywars
 version: '${project.version}'
 main: net.qubikstudios.Skywars
+
+commands:
+  start:
+  forcemap:
