@@ -1,6 +1,7 @@
 package net.qubikstudios.commands;
 
 import net.qubikstudios.Skywars;
+import net.qubikstudios.scoreboards.WaitingScoreboard;
 import net.qubikstudios.utils.Map;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -27,6 +28,7 @@ public class ForcemapCommand implements CommandExecutor, TabCompleter{
                             }
                             Skywars.setMap(map);
                             p.sendMessage("Du hast die Map gesetzt!");
+                            WaitingScoreboard.updateMap();
                             return true;
                         }
                     }

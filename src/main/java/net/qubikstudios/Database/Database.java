@@ -1,7 +1,7 @@
 package net.qubikstudios.Database;
 
-import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
-import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
+import com.mysql.cj.jdbc.MysqlConnectionPoolDataSource;
+import com.mysql.cj.jdbc.MysqlDataSource;
 import net.qubikstudios.Skywars;
 
 import javax.sql.DataSource;

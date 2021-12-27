@@ -1,7 +1,10 @@
 name: Skywars
 version: '${project.version}'
 main: net.qubikstudios.Skywars
+depend:
+  - TimoCloud
 
 commands:
   start:
   forcemap:
+  map:

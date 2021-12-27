@@ -1,14 +1,17 @@
 package net.qubikstudios.listener;
 
 import net.qubikstudios.Skywars;
+import net.qubikstudios.scoreboards.WaitingScoreboard;
+import net.qubikstudios.utils.State;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-
-import java.util.logging.Level;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class JoinListener implements Listener {
 
@@ -22,18 +25,31 @@ public class JoinListener implements Listener {
                     return;
                 }
                 p.setGameMode(GameMode.ADVENTURE);
-                Skywars.getPlugin().getLogger().log(Level.INFO, "teleport");
-                p.setLevel(Skywars.getCountdown());
                 p.teleport(Skywars.hub);
-                if(Bukkit.getOnlinePlayers().size() >= Skywars.getPlayerstostart()){
+                new WaitingScoreboard(p);
+                p.setLevel(Skywars.getCountdown());
+                p.getInventory().setItem(0, new ItemStack(Material.CHEST));
+                if(Bukkit.getOnlinePlayers().size() >= Skywars.getPlayerstostart() && !Skywars.runsCountdown()){
                     Skywars.startCountdown();
                 }
+                if(Bukkit.getOnlinePlayers().size() == Skywars.getMaxPlayers()){
+                    Skywars.setCountdown(10);
+                }
+                WaitingScoreboard.updatePlayers();
                 break;
             case INGAME:
                 break;
             case ENDING:
                 p.kickPlayer("§cThe game is finished!");
                 break;
+        }
+    }
+
+    @EventHandler
+    public void HandlePlayerLeave(PlayerQuitEvent ev){
+        ev.getPlayer().setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+        if(Skywars.state == State.STARTING){
+            WaitingScoreboard.updatePlayers();
         }
     }
 }

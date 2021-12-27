@@ -2,19 +2,32 @@ package net.qubikstudios;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.title.Title;
 import net.qubikstudios.commands.ForcemapCommand;
+import net.qubikstudios.commands.MapCommand;
 import net.qubikstudios.commands.StartCommand;
+import net.qubikstudios.kits.DefaultKit;
 import net.qubikstudios.kits.Kit;
-import net.qubikstudios.listener.JoinListener;
+import net.qubikstudios.kits.KitManager;
+import net.qubikstudios.listener.*;
+import net.qubikstudios.scoreboards.IngameScoreboard;
 import net.qubikstudios.utils.Map;
 import net.qubikstudios.utils.State;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.WorldCreator;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -23,6 +36,10 @@ import java.util.logging.Level;
 public final class Skywars extends JavaPlugin {
 
     private static Skywars plugin;
+    public static final Component prefix = Component.text("[").color(NamedTextColor.DARK_GRAY).decorate(TextDecoration.BOLD)
+            .append(Component.text("Sky").color(NamedTextColor.DARK_AQUA))
+            .append(Component.text("Wars").color(NamedTextColor.RED))
+            .append(Component.text("] ").color(NamedTextColor.DARK_GRAY).decorate(TextDecoration.BOLD));
     public static State state;
     public static Location hub;
     private static int maxPlayers;
@@ -31,7 +48,9 @@ public final class Skywars extends JavaPlugin {
     private static Map map;
     private FileConfiguration config;
     private static int Countdown = 0;
+    private static int Count = 5;
     private static int CountdownID;
+    private static int Task;
 
 
     @Override
@@ -50,6 +69,7 @@ public final class Skywars extends JavaPlugin {
 
         registerCommands();
         registerListener();
+        registerKits();
         Debug();
         Bukkit.getScheduler().runTaskLater(this, new Runnable() {
             @Override
@@ -71,12 +91,20 @@ public final class Skywars extends JavaPlugin {
         getCommand("start").setExecutor(new StartCommand());
         getCommand("forcemap").setExecutor(new ForcemapCommand());
         getCommand("forcemap").setTabCompleter(new ForcemapCommand());
+        getCommand("map").setExecutor(new MapCommand());
     }
 
     private void registerListener(){
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new JoinListener(), this);
-        pluginManager.registerEvents(new Kit(), this);
+        pluginManager.registerEvents(new KillListener(), this);
+        pluginManager.registerEvents(new FreezeListener(), this);
+        pluginManager.registerEvents(new InteractionListener(), this);
+        pluginManager.registerEvents(new InventoryListener(), this);
+    }
+
+    private void registerKits(){
+        KitManager.registerKit(new DefaultKit());
     }
 
     public void initConfig(){
@@ -107,13 +135,14 @@ public final class Skywars extends JavaPlugin {
     }
 
     public static void startCountdown(){
-        Countdown = 10;
+        Countdown = 60;
         CountdownID = Bukkit.getScheduler().scheduleSyncRepeatingTask(Skywars.getPlugin(), new Runnable() {
             @Override
             public void run() {
                 Bukkit.getOnlinePlayers().forEach(player -> player.setLevel(Countdown));
                 if(Countdown <= 10){
                     Bukkit.getOnlinePlayers().forEach(player -> player.setExp(Countdown/10f));
+                    Bukkit.getOnlinePlayers().forEach(player -> player.playSound(Sound.sound(Key.key("entity.experience_orb.pickup"), Sound.Source.MASTER, 1f, 1f)));
                 }
                 if(Countdown <= 0) {
                     startRound();
@@ -131,7 +160,23 @@ public final class Skywars extends JavaPlugin {
 
     public static void startRound(){
         Bukkit.broadcastMessage("Runde startet!");
+        TimoCloudAPI.getBukkitAPI().getThisServer().setState("INGAME");
+        state = State.FINAL;
         Bukkit.getOnlinePlayers().forEach(player -> player.teleport(map.getPlayerSpawn()));
+        Bukkit.getOnlinePlayers().forEach(player -> player.setGameMode(GameMode.SURVIVAL));
+        Bukkit.getOnlinePlayers().forEach(player -> new IngameScoreboard(player));
+        final Component title = Component.text("Round starts in...");
+        Task = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
+            @Override
+            public void run() {
+                Bukkit.getOnlinePlayers().forEach(player -> player.showTitle(Title.title(title, Component.text(Count), Title.Times.of(Duration.ZERO, Duration.ofSeconds(1), Duration.ZERO))));
+                Count--;
+                if(Count < 1){
+                    state = State.INGAME;
+                    Bukkit.getScheduler().cancelTask(Task);
+                }
+            }
+        }, 0l, 20);
     }
 
     public static boolean runsCountdown(){
