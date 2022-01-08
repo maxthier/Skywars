@@ -61,7 +61,7 @@
         -->
         <repository>
             <id>purpur</id>
-            <url>https://repo.pl3x.net/</url>
+            <url>https://repo.purpurmc.org/snapshots</url>
         </repository>
         <repository>
             <id>viaversion-repo</id>
@@ -70,8 +70,9 @@
     </repositories>
 
     <dependencies>
+
         <dependency>
-            <groupId>net.pl3x.purpur</groupId>
+            <groupId>org.purpurmc.purpur</groupId>
             <artifactId>purpur-api</artifactId>
             <version>1.17.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
@@ -92,7 +93,7 @@
             <artifactId>TimoCloud-API</artifactId>
             <version>6.4.0</version>
             <scope>system</scope>
-            <systemPath>E:/Minecraft/API/TimoCloud-API-6.4.0.jar</systemPath>
+            <systemPath>/home/marlon/API/TimoCloud-API-6.4.0.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>

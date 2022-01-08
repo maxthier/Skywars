@@ -29,12 +29,7 @@ public class KillListener implements Listener {
             players.forEach(player -> player.getName());
             Bukkit.broadcast(Skywars.prefix.append(Component.text(winner[0].getName()).color(NamedTextColor.GOLD)).append(Component.text(" won the game!").color(NamedTextColor.GREEN)));
             Bukkit.broadcast(Skywars.prefix.append(Component.text("the server stops in 10 seconds!").color(NamedTextColor.DARK_GREEN)));
-            Bukkit.getScheduler().runTaskLater(Skywars.getPlugin(), new Runnable() {
-                @Override
-                public void run() {
-                    Bukkit.shutdown();
-                }
-            }, 200);
+            Bukkit.getScheduler().runTaskLater(Skywars.getPlugin(), () -> Bukkit.shutdown(), 200);
         }else{
             p.kick(Component.text("You lost the game!"));
         }

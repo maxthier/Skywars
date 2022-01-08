@@ -2,7 +2,6 @@ package net.qubikstudios;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
-import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -12,9 +11,11 @@ import net.kyori.adventure.title.Title;
 import net.qubikstudios.commands.ForcemapCommand;
 import net.qubikstudios.commands.MapCommand;
 import net.qubikstudios.commands.StartCommand;
-import net.qubikstudios.kits.DefaultKit;
-import net.qubikstudios.kits.Kit;
-import net.qubikstudios.kits.KitManager;
+import net.qubikstudios.events.RoundStartEvent;
+import net.qubikstudios.kits.AngelKit;
+import net.qubikstudios.kits.StarterKit;
+import net.qubikstudios.kits.EndermanKit;
+import net.qubikstudios.kits.logic.KitManager;
 import net.qubikstudios.listener.*;
 import net.qubikstudios.scoreboards.IngameScoreboard;
 import net.qubikstudios.utils.Map;
@@ -23,7 +24,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -104,7 +104,15 @@ public final class Skywars extends JavaPlugin {
     }
 
     private void registerKits(){
-        KitManager.registerKit(new DefaultKit());
+        //Epic
+        KitManager.registerKit(new EndermanKit());
+        //Rare
+
+        //Uncommon
+
+        //Free
+        KitManager.registerKit(new StarterKit());
+
     }
 
     public void initConfig(){
@@ -161,8 +169,10 @@ public final class Skywars extends JavaPlugin {
     public static void startRound(){
         Bukkit.broadcastMessage("Runde startet!");
         TimoCloudAPI.getBukkitAPI().getThisServer().setState("INGAME");
-        state = State.FINAL;
+        state = State.PREGAME;
+        Bukkit.getPluginManager().callEvent(new RoundStartEvent());
         Bukkit.getOnlinePlayers().forEach(player -> player.teleport(map.getPlayerSpawn()));
+        Bukkit.getOnlinePlayers().forEach(player -> player.getInventory().setContents(KitManager.getSelectedKit(player).getInv().getContents()));
         Bukkit.getOnlinePlayers().forEach(player -> player.setGameMode(GameMode.SURVIVAL));
         Bukkit.getOnlinePlayers().forEach(player -> new IngameScoreboard(player));
         final Component title = Component.text("Round starts in...");

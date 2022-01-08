@@ -14,7 +14,7 @@ public class ItemBuilder {
 
     private ItemStack item;
     private ItemMeta meta;
-    private List<String> lore;
+    private List<Component> lore;
 
     public ItemBuilder(Material material, int amount){
         item = new ItemStack(material, amount);
@@ -45,14 +45,14 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder addLoreLine(String line){
+    public ItemBuilder addLoreLine(Component line){
         if(meta.hasLore()) {
-            lore = meta.getLore();
+            lore = meta.lore();
         }else{
             lore = new ArrayList<>();
         }
         lore.add(line);
-        meta.setLore(lore);
+        meta.lore(lore);
         return this;
     }
 

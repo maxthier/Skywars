@@ -1,4 +1,4 @@
-package net.qubikstudios.kits;
+package net.qubikstudios.kits.logic;
 
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;

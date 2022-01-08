@@ -1,6 +1,7 @@
-package net.qubikstudios.kits;
+package net.qubikstudios.kits.logic;
 
 import net.kyori.adventure.text.Component;
+import net.qubikstudios.kits.logic.KitManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;

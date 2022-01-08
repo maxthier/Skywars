@@ -13,6 +13,7 @@ public class StartCommand implements CommandExecutor {
         if(sender instanceof Player){
             Player p = (Player) sender;
             Skywars.startCountdown();
+            Skywars.setCountdown(10);
         }
         return false;
     }

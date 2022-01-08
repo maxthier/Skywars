@@ -10,7 +10,7 @@ public class FreezeListener implements Listener {
 
     @EventHandler
     public void handlePlayerMovement(PlayerMoveEvent ev){
-        if(Skywars.getState() == State.FINAL) {
+        if(Skywars.getState() == State.PREGAME) {
             ev.setCancelled(true);
         }
     }

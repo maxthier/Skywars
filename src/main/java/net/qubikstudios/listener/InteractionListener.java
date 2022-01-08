@@ -1,7 +1,7 @@
 package net.qubikstudios.listener;
 
 import net.qubikstudios.Skywars;
-import net.qubikstudios.kits.KitInventory;
+import net.qubikstudios.kits.logic.KitInventory;
 import net.qubikstudios.utils.State;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
